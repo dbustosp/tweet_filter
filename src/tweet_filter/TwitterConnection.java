@@ -3,10 +3,10 @@ package tweet_filter;
 public final class TwitterConnection {
 	
 	// Variables
-	private String OAUTH_CONSUMER_KEY = "";
-	private String OAUTH_CONSUMER_SECRET = "";
-	private String OAUTH_ACCESS_TOKEN = "";
-	private String OAUTH_ACCESS_TOKEN_SECRET = "";
+	private String OAUTH_CONSUMER_KEY = "Ql65YGs9WYz0PUKDLmrYvY27F";
+	private String OAUTH_CONSUMER_SECRET = "ER8Hs3nYjv9knBBN8KgMQxEbPLPzzrSgsIXnz9K4O3z9Cwj1JD";
+	private String OAUTH_ACCESS_TOKEN = "267290560-YTdh4JpgapPdLwMLCRq5cfnv20PnzbSEhLx6bsbc";
+	private String OAUTH_ACCESS_TOKEN_SECRET = "DWREl6GMXXnaV6a3V257u4TZ7qaEiBDP03imHmybhM06r";
 	
 	
 	private static TwitterConnection instance = new TwitterConnection();

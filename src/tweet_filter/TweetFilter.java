@@ -1,5 +1,6 @@
 package tweet_filter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import twitter4j.FilterQuery;
@@ -18,13 +19,29 @@ public class TweetFilter {
 
 	public static void main(String[] args) {
 		
+		// Instantiating the object that will contain the methods for extracting the tweets
 		TweetFilter tweetFilter = new TweetFilter();
-		tweetFilter.startSearchTweets();
 		
-        	
+		// Defining a path for the file with all the keywords
+		String pathFile = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
+		
+		// The object which will read the file and will return the keywords from the file
+		FileReader fileReader = new FileReader(pathFile);
+		
+		// If is false is because the file was not read successfully
+		if(!fileReader.init()){
+			System.out.println("It was impossible read the file.");
+		}
+		
+		// Casting from ArrayList<String> to String[]
+		String []keywords = new String[fileReader.getKeywords().size()];
+		fileReader.getKeywords().toArray(keywords);
+		
+		// Calling the method that will start the tweet's extraction
+		tweetFilter.startStream(keywords);
 	}
 	
-	public void startStream(){
+	public void startStream(String[] keywords){
 		// Getting the instance associated with the configuration
 		TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 		
@@ -34,12 +51,15 @@ public class TweetFilter {
 		
 		twitterStream.setOAuthAccessToken(accessToken);
 		
-		String keywords[] = {"Universidad de Santiago", "Usach", "UdeSantiago"};
+		//String keywords[] = {"Universidad de Santiago", "Usach", "UdeSantiago"};
 		FilterQuery filter = new FilterQuery();
+		
         filter.track(keywords);
         
         StatusListener listener = new TweetListener();
         twitterStream.addListener(listener);
+        
+        
         
         twitterStream.filter(filter);
 	}
@@ -51,14 +71,12 @@ public class TweetFilter {
 		AccessToken accessToken = new AccessToken(TwitterConnection.getInstance().getAccessToken() ,TwitterConnection.getInstance().getAccessTokenSecret());
 		twitter.setOAuthAccessToken(accessToken);
 		
-		Query query = new Query("Usach");
+		Query query = new Query("Universidad de Santiago de Chile");
 		query.count(100);
 		query.since("2010-01-01");
-		query.until("2010-04-01");
 		
 		QueryResult result;
 
-		System.out.println("Hola");
 		
 		try {
 			result = twitter.search(query);
