@@ -2,7 +2,7 @@ package tweet_filter;
 
 public final class TwitterConnection {
 	
-	// Variables
+	// Variables 
 	private String OAUTH_CONSUMER_KEY = "";
 	private String OAUTH_CONSUMER_SECRET = "";
 	private String OAUTH_ACCESS_TOKEN = "";
@@ -11,7 +11,7 @@ public final class TwitterConnection {
 	
 	private static TwitterConnection instance = new TwitterConnection();
 	
-	private TwitterConnection(){s
+	private TwitterConnection(){
 		
 	}
 	

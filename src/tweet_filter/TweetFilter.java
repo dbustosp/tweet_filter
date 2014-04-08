@@ -16,32 +16,17 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
 
 public class TweetFilter {
-
-	public static void main(String[] args) {
-		
-		// Instantiating the object that will contain the methods for extracting the tweets
-		TweetFilter tweetFilter = new TweetFilter();
-		
-		// Defining a path for the file with all the keywords
-		String pathFile = "PATH_TO_THE_FILE_EXAMPLE";
-		
-		// The object which will read the file and will return the keywords from the file
-		FileReader fileReader = new FileReader(pathFile);
-		
-		// If is false is because the file was not read successfully
-		if(!fileReader.init()){
-			System.out.println("It was impossible read the file.");
-		}
-		
-		// Casting from ArrayList<String> to String[]
-		String []keywords = new String[fileReader.getKeywords().size()];
-		fileReader.getKeywords().toArray(keywords);
-		
-		// Calling the method that will start the tweet's extraction
-		tweetFilter.startStream(keywords);
-	}
+    
+	// Main object that will handle all the database operations 
+    MongoDB mongo;
+    
+    public TweetFilter(){
+    	// Instantiating the object mongo
+        mongo = new MongoDB();
+    }
 	
 	public void startStream(String[] keywords){
+		
 		// Getting the instance associated with the configuration
 		TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 		
@@ -54,13 +39,20 @@ public class TweetFilter {
 		//String keywords[] = {"Universidad de Santiago", "Usach", "UdeSantiago"};
 		FilterQuery filter = new FilterQuery();
 		
+		// Passing the keywrods to the filter object
         filter.track(keywords);
         
-        StatusListener listener = new TweetListener();
+        // mongo.init for setting the connection to MongoDB
+        if(!mongo.initMongoDB()){
+        	System.out.println("It was impossible make the connection.");
+        	System.exit(-1);
+        }
+        
+        // Attaching the listener to the twitterStream object
+        StatusListener listener = new TweetListener(mongo);
         twitterStream.addListener(listener);
-        
-        
-        
+         
+        // Starting to filter the tweets
         twitterStream.filter(filter);
 	}
 	
@@ -92,9 +84,30 @@ public class TweetFilter {
             System.out.println("Failed to search tweets: " + e.getMessage());
             System.exit(-1);
 		}
-	    
-
+	}
+	
+	public static void main(String[] args) {
 		
+		// Instantiating the object that will contain the methods for extracting the tweets
+		TweetFilter tweetFilter = new TweetFilter();
+		
+		// Defining a path for the file with all the keywords
+		String pathFile = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
+		
+		// The object which will read the file and will return the keywords from the file
+		FileReader fileReader = new FileReader(pathFile);
+		
+		// If is false is because the file was not read successfully
+		if(!fileReader.init()){
+			System.out.println("It was impossible read the file.");
+		}
+		
+		// Casting from ArrayList<String> to String[]
+		String []keywords = new String[fileReader.getKeywords().size()];
+		fileReader.getKeywords().toArray(keywords);
+		
+		// Calling the method that will start the tweet's extraction
+		tweetFilter.startStream(keywords);
 	}
 
 }
