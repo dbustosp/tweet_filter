@@ -17,9 +17,9 @@ public class TweetListener implements StatusListener {
 	
 	public void onStatus(Status status) {
         System.out.println(status.getUser().getName() + " : " + status.getText());
+        
         // Parsing and saving tweets
-        DBObject tweet = mongo.parsingTweet(status);
-        System.out.println(tweet.toString());
+        DBObject tweet = mongo.parsingTweet(null, status);
         mongo.saveTweet(tweet);
     }
 	

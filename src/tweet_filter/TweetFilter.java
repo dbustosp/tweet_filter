@@ -37,7 +37,7 @@ public class TweetFilter {
         }
     }
 	
-	public void startStream(String[] keywords){
+	public void startStream(String[] keywords, int size){
 		
 		// Getting the instance associated with the configuration
 		TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
@@ -53,6 +53,13 @@ public class TweetFilter {
 		
 		// Passing the keywrods to the filter object
         filter.track(keywords);
+        double[][] loc = {{-57.891497,-81.174317}, {-17.834536,-67.311036 }};
+        filter.locations(loc);
+        
+        String[] lang = {"es"};
+        
+        filter.language(lang);
+        
         
         // Attaching the listener to the twitterStream object
         StatusListener listener = new TweetListener(mongo);
@@ -69,8 +76,8 @@ public class TweetFilter {
 		int numAnos = 1;
 		String[] meses = new String[] {"04"};
 		int numMeses = 1;
-		String[] dias = new String[] {"01","02","03","04","05","06","07","08","09"};
-		int numDias = 9;
+		String[] dias = new String[] {"01","02","03","04","05","06","07","08"};
+		int numDias = 8;
 		
 		Twitter twitter = TwitterFactory.getSingleton();
 				
@@ -91,7 +98,7 @@ public class TweetFilter {
 				for(int j = 0; j < numMeses; j++) {
 					// Iteration for days
 					for(int k = 0; k < (numDias - 1); k++) {
-					//	System.out.println(anos[i] + "-" + meses[j] + "-" + dias[k] + "   Hasta    " + anos[i] + "-" + meses[j] + "-" + dias[k+1]);
+						//	System.out.println(anos[i] + "-" + meses[j] + "-" + dias[k] + "   Hasta    " + anos[i] + "-" + meses[j] + "-" + dias[k+1]);
 						
 						query.setSince(anos[i] + "-" + meses[j] + "-" + dias[k]);
 						query.setUntil(anos[i] + "-" + meses[j] + "-" + dias[k+1]);
@@ -106,7 +113,7 @@ public class TweetFilter {
 				                System.out.println(num_tweet + "-   @" + tweet.getUser().getScreenName() + " - " + tweet.getText());
 				                
 				                // Parsing and saving tweets
-				                DBObject object = mongo.parsingTweet(tweet);
+				                DBObject object = mongo.parsingTweet(keywords[keyword], tweet);
 				                mongo.saveTweet(object);	                
 				                num_tweet++;
 							}
@@ -119,6 +126,17 @@ public class TweetFilter {
 					}
 				} // end iteration for months
 			} // end iteration for years		
+		
+			if(num_tweet >= 1500){
+				try {
+					Thread.sleep(900000);
+				} catch (InterruptedException e) {
+					System.out.println("No se pudo dormir la hebra.");
+					e.printStackTrace();
+				}
+				num_tweet = 1;
+			}
+		
 		} // end iteration for keyword[]
 	}
 	
@@ -149,7 +167,7 @@ public class TweetFilter {
 		// 2: Reading tweets with Search API
 		
 		// Calling the method that will start the tweet's extraction
-		tweetFilter.startSearchTweetsDate(keywords, fileReader.getKeywords().size());
+		tweetFilter.startStream(keywords, fileReader.getKeywords().size());
 	}
 
 }

@@ -38,10 +38,11 @@ public class MongoDB {
 	}
 	
 	// Parsing the tweet
-	public DBObject parsingTweet(Status status){
+	public DBObject parsingTweet(String keyword, Status status){
         
 		// Parsing the tweet
         DBObject tweet = new BasicDBObject();
+        tweet.put("keyword", keyword);
         tweet.put("id_tweet", status.getId());
         tweet.put("id_user", status.getUser().getId());
         tweet.put("text_tweet", status.getText());
