@@ -14,30 +14,30 @@ import com.mongodb.MongoClient;
 
 public class MongoDB {
 	
+	// Variables
 	private MongoClient mongo;
 	private DB db;
 	private DBCollection coll;
-	private int status;
-	
-	
-	public void MongoDB() {
-		status = 0;		
+		
+	// Constructor
+	public MongoDB() {
+
 	}
 	
+	// Init the MongoDB connection
 	public Boolean initMongoDB() {
 		try{
 			mongo = new MongoClient(MongoDBConnection.getInstance().getHostDatabase(), MongoDBConnection.getInstance().getPortDatabase());
 			db = this.mongo.getDB(MongoDBConnection.getInstance().getDBName());
 			coll = db.getCollection(MongoDBConnection.getInstance().getCollectionName());
-			status = 1;
 		}catch(UnknownHostException e){
 			e.printStackTrace();
-			status = -1;
 			return false;
 		}
 		return true;
 	}
 	
+	// Parsing the tweet
 	public DBObject parsingTweet(Status status){
         
 		// Parsing the tweet
@@ -46,6 +46,8 @@ public class MongoDB {
         tweet.put("id_user", status.getUser().getId());
         tweet.put("text_tweet", status.getText());
 		tweet.put("date_tweet", status.getCreatedAt());
+		
+
 		
 		// Getting user location
 		if (status.getUser().getLocation() != null) {
@@ -58,15 +60,36 @@ public class MongoDB {
 			tweet.put("loc", geo);
 		}
 		
+		// get tweet data
+		tweet.put("num_retweet", status.getRetweetCount());
+		tweet.put("num_fav", status.getFavoriteCount());	
+		
+		// get user data
+		tweet.put("num_user_followers", status.getUser().getFollowersCount());
+		tweet.put("num_user_friends", status.getUser().getFriendsCount());
+		tweet.put("num_user_fav", status.getUser().getFavouritesCount());
+		tweet.put("num_user_lists", status.getUser().getListedCount());
+		tweet.put("user_name", status.getUser().getName());
+				
+		
+		
+		// profile data
+		tweet.put("url_user", status.getUser().getURL());
+		tweet.put("url_image_background", status.getUser().getProfileBackgroundImageURL());
+		tweet.put("url_image_profile", status.getUser().getOriginalProfileImageURL());
+		
+		
+		
 		// Returning the tweet in the database
 		return tweet;
 	}
 	
-	
+	// Saving the Tweet
 	public void saveTweet(DBObject tweet) {
 		coll.insert(tweet);				
 	}
 	
+	// Disconenct the connection
 	public void disconnect(){
 		mongo.close();
 	}

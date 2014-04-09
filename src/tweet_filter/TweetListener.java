@@ -5,7 +5,6 @@ import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 public class TweetListener implements StatusListener {
@@ -26,12 +25,10 @@ public class TweetListener implements StatusListener {
 	
 	public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
 		
-		
 	}
     
 	public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-		
-		
+		System.out.println("onTrackLimitationNotice -- raised - numberOfLimitedStatuses: " + numberOfLimitedStatuses);		
 	}
     
 	public void onException(Exception ex) {

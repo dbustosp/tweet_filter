@@ -1,6 +1,5 @@
 package tweet_filter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import twitter4j.FilterQuery;
@@ -15,14 +14,27 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
 
+import com.mongodb.DBObject;
+
 public class TweetFilter {
     
-	// Main object that will handle all the database operations 
-    MongoDB mongo;
-    
+	MongoDB mongo;
+	long lowest_id;
+	long highest_id;
+	
     public TweetFilter(){
+    	// Main object that will handle all the database operations 
     	// Instantiating the object mongo
-        mongo = new MongoDB();
+    	mongo = new MongoDB();
+    	
+    	// Initializing the lowest id for tweets
+    	lowest_id = (long) (Math.pow(2.0, 64.0) - 1);
+    	
+        // mongo.init for setting the connection to MongoDB
+        if(!mongo.initMongoDB()){
+        	System.out.println("It was impossible make the connection.");
+        	System.exit(-1);
+        }
     }
 	
 	public void startStream(String[] keywords){
@@ -42,12 +54,6 @@ public class TweetFilter {
 		// Passing the keywrods to the filter object
         filter.track(keywords);
         
-        // mongo.init for setting the connection to MongoDB
-        if(!mongo.initMongoDB()){
-        	System.out.println("It was impossible make the connection.");
-        	System.exit(-1);
-        }
-        
         // Attaching the listener to the twitterStream object
         StatusListener listener = new TweetListener(mongo);
         twitterStream.addListener(listener);
@@ -56,35 +62,66 @@ public class TweetFilter {
         twitterStream.filter(filter);
 	}
 	
-	public void startSearchTweets(){
-		Twitter twitter = TwitterFactory.getSingleton();
+	// Method searching tweets considering the date
+	public void startSearchTweetsDate(String[] keywords, int size){
 		
+		String[] anos = new String[] {"2014"};
+		int numAnos = 1;
+		String[] meses = new String[] {"04"};
+		int numMeses = 1;
+		String[] dias = new String[] {"01","02","03","04","05","06","07","08","09"};
+		int numDias = 9;
+		
+		Twitter twitter = TwitterFactory.getSingleton();
+				
 		twitter.setOAuthConsumer(TwitterConnection.getInstance().getConsumerKey(), TwitterConnection.getInstance().getConsumerSecret());
 		AccessToken accessToken = new AccessToken(TwitterConnection.getInstance().getAccessToken() ,TwitterConnection.getInstance().getAccessTokenSecret());
 		twitter.setOAuthAccessToken(accessToken);
 		
-		Query query = new Query("Universidad de Santiago de Chile");
-		query.count(100);
-		query.since("2010-01-01");
-		
-		QueryResult result;
-
-		
-		try {
-			result = twitter.search(query);
-			List<Status> tweets = result.getTweets();
-            int num_tweet = 1;
-			for (Status tweet : tweets) {
-                System.out.println(num_tweet + "-   @" + tweet.getUser().getScreenName() + " - " + tweet.getText());
-                num_tweet++;
-			}
+		int num_tweet = 1;
+		// Iteration for keyword[]
+		for(int keyword = 0; keyword < size; keyword++) {
+			Query query = new Query(keywords[keyword]);
+			query.setLang("es");
+			query.count(100);
 			
-		} catch (TwitterException e) {
-            e.printStackTrace();
-            System.out.println("Failed to search tweets: " + e.getMessage());
-            System.exit(-1);
-		}
+			// Iteration for years
+			for(int i = 0; i < numAnos; i++) {
+				// Iteration for moths
+				for(int j = 0; j < numMeses; j++) {
+					// Iteration for days
+					for(int k = 0; k < (numDias - 1); k++) {
+					//	System.out.println(anos[i] + "-" + meses[j] + "-" + dias[k] + "   Hasta    " + anos[i] + "-" + meses[j] + "-" + dias[k+1]);
+						
+						query.setSince(anos[i] + "-" + meses[j] + "-" + dias[k]);
+						query.setUntil(anos[i] + "-" + meses[j] + "-" + dias[k+1]);
+						
+						QueryResult result;
+						
+						try {
+							result = twitter.search(query);
+							List<Status> tweets = result.getTweets();
+				            
+							for (Status tweet : tweets) {
+				                System.out.println(num_tweet + "-   @" + tweet.getUser().getScreenName() + " - " + tweet.getText());
+				                
+				                // Parsing and saving tweets
+				                DBObject object = mongo.parsingTweet(tweet);
+				                mongo.saveTweet(object);	                
+				                num_tweet++;
+							}
+							
+						} catch (TwitterException e) {
+				            e.printStackTrace();
+				            System.out.println("Failed to search tweets: " + e.getMessage());
+				            System.exit(-1);
+						}	
+					}
+				} // end iteration for months
+			} // end iteration for years		
+		} // end iteration for keyword[]
 	}
+	
 	
 	public static void main(String[] args) {
 		
@@ -93,6 +130,7 @@ public class TweetFilter {
 		
 		// Defining a path for the file with all the keywords
 		String pathFile = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
+		//String pathFile = "/Users/danilobustos/tweet_filter/hashtags_universities.txt";
 		
 		// The object which will read the file and will return the keywords from the file
 		FileReader fileReader = new FileReader(pathFile);
@@ -106,8 +144,12 @@ public class TweetFilter {
 		String []keywords = new String[fileReader.getKeywords().size()];
 		fileReader.getKeywords().toArray(keywords);
 		
+		// Run two threads:
+		// 1: Reading tweets with Stream API
+		// 2: Reading tweets with Search API
+		
 		// Calling the method that will start the tweet's extraction
-		tweetFilter.startStream(keywords);
+		tweetFilter.startSearchTweetsDate(keywords, fileReader.getKeywords().size());
 	}
 
 }
