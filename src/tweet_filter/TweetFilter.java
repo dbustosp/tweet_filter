@@ -147,8 +147,9 @@ public class TweetFilter {
 		TweetFilter tweetFilter = new TweetFilter();
 		
 		// Defining a path for the file with all the keywords
-		String pathFile = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
-		//String pathFile = "/Users/danilobustos/tweet_filter/hashtags_universities.txt";
+		//String pathFile = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
+		String pathFile = args[0];
+		System.out.println("PathFile: " + pathFile);
 		
 		// The object which will read the file and will return the keywords from the file
 		FileReader fileReader = new FileReader(pathFile);
