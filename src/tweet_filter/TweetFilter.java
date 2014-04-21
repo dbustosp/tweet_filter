@@ -149,10 +149,13 @@ public class TweetFilter {
 		// Defining a path for the file with all the keywords
 		//String pathFile = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
 		String pathFile = args[0];
+		String pathFileKeywordsFilter = "/Users/danilobustos/tweet_filter/keywords_filter.txt";
 		System.out.println("PathFile: " + pathFile);
+		System.out.println("pathFileKeywordsFilter: " + pathFileKeywordsFilter);
 		
 		// The object which will read the file and will return the keywords from the file
 		FileReader fileReader = new FileReader(pathFile);
+		FileREader fileReaderKeywords = new FileReader(pathFileKeywordsFilter);
 		
 		// If is false is because the file was not read successfully
 		if(!fileReader.init()){

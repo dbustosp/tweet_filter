@@ -20,6 +20,9 @@ public class TweetListener implements StatusListener {
         
         // Parsing and saving tweets
         DBObject tweet = mongo.parsingTweet(null, status);
+        
+        // Passing the tweet through a filter
+        
         mongo.saveTweet(tweet);
     }
 	

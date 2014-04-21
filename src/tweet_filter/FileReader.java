@@ -12,14 +12,54 @@ import java.util.ArrayList;
 public class FileReader {
 	
 	private String filePath;
+	private String filePathKeywords;
 	ArrayList<String> keywords;
+	ArrayList<String> keywords_filter;
 	
-	public FileReader(String _filePath) {
+	// Constructor
+	public FileReader(String _filePath, String _filePathKeywords) {
 		filePath = _filePath;
+		filePathKeywords = _filePathKeywords;
 		keywords = new ArrayList<String>();
+		keywords_filter = new ArrayList<String>();
 	}
 	
-	public Boolean init() {
+	// Read the file with the keywords to filter the tweets once crawled
+	public Boolean initReadWordsFilter() {
+		
+		InputStream fis;
+		BufferedReader br;
+		String line;
+		
+		try {
+			fis = new FileInputStream(filePathKeywords);
+			br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+			
+			// Start reading
+			while ((line = br.readLine()) != null) {
+			    System.out.println(line);
+			    keywords_filter.add(line);
+			}
+	
+			// Done with the file
+			br.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("File not Found");
+			e.printStackTrace();
+			return false;
+		} catch(IOException e1){
+			System.out.println("IOException");
+			e1.printStackTrace();
+			return false;
+		}
+		
+		br = null;
+		fis = null;
+		return true;
+	}
+	
+	// Read the file the keywords to filter the tweets from the API
+	public Boolean initReadWordsCrawler() {
 		
 		InputStream fis;
 		BufferedReader br;
@@ -55,8 +95,4 @@ public class FileReader {
 	public ArrayList<String> getKeywords() {
 		return keywords;
 	}
-	
-	
-	
-
 }
