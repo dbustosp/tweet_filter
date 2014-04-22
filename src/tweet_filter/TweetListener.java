@@ -9,20 +9,21 @@ import com.mongodb.DBObject;
 
 public class TweetListener implements StatusListener {
 	
+	// Database object
 	MongoDB mongo;
+
+	
 	
 	public TweetListener(MongoDB _mongo){
 		mongo = _mongo;
 	}
 	
 	public void onStatus(Status status) {
-        System.out.println(status.getUser().getName() + " : " + status.getText());
+        //System.out.println(status.getUser().getName() + " : " + status.getText());
         
-        // Parsing and saving tweets
-        DBObject tweet = mongo.parsingTweet(null, status);
-        
-        // Passing the tweet through a filter
-        
+        // Parsing and saving tweets filtered
+        DBObject tweet = mongo.parsingTweet(null, status);        
+        // Saving tweet
         mongo.saveTweet(tweet);
     }
 	

@@ -18,10 +18,11 @@ public class MongoDB {
 	private MongoClient mongo;
 	private DB db;
 	private DBCollection coll;
-		
+	private Filter f;
+	
 	// Constructor
-	public MongoDB() {
-
+	public MongoDB(Filter _f) {
+		f = _f;
 	}
 	
 	// Init the MongoDB connection
@@ -39,7 +40,16 @@ public class MongoDB {
 	
 	// Parsing the tweet
 	public DBObject parsingTweet(String keyword, Status status){
-        
+		
+		// Get the text tweet
+		String text_tweet = status.getText();
+		// Passing the tweet string
+		if(!f.filter(text_tweet)) {
+			return null;
+		}
+		
+		System.out.println("Guardando: " + text_tweet);
+		
 		// Parsing the tweet
         DBObject tweet = new BasicDBObject();
         tweet.put("keyword", keyword);

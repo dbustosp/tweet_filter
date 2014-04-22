@@ -1,5 +1,6 @@
 package tweet_filter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import twitter4j.FilterQuery;
@@ -22,10 +23,10 @@ public class TweetFilter {
 	long lowest_id;
 	long highest_id;
 	
-    public TweetFilter(){
+    public TweetFilter(Filter f){
     	// Main object that will handle all the database operations 
     	// Instantiating the object mongo
-    	mongo = new MongoDB();
+    	mongo = new MongoDB(f);
     	
     	// Initializing the lowest id for tweets
     	lowest_id = (long) (Math.pow(2.0, 64.0) - 1);
@@ -37,7 +38,7 @@ public class TweetFilter {
         }
     }
 	
-	public void startStream(String[] keywords, int size){
+	public void startStream(String[] keywords, int size, ArrayList<String> keywords_filter){
 		
 		// Getting the instance associated with the configuration
 		TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
@@ -142,23 +143,19 @@ public class TweetFilter {
 	
 	
 	public static void main(String[] args) {
-		
-		// Instantiating the object that will contain the methods for extracting the tweets
-		TweetFilter tweetFilter = new TweetFilter();
-		
+				
 		// Defining a path for the file with all the keywords
 		//String pathFile = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
-		String pathFile = args[0];
+		String pathFileKeyWordsCrawler = args[0];
 		String pathFileKeywordsFilter = "/Users/danilobustos/tweet_filter/keywords_filter.txt";
-		System.out.println("PathFile: " + pathFile);
+		System.out.println("PathFile: " + pathFileKeyWordsCrawler);
 		System.out.println("pathFileKeywordsFilter: " + pathFileKeywordsFilter);
 		
 		// The object which will read the file and will return the keywords from the file
-		FileReader fileReader = new FileReader(pathFile);
-		FileREader fileReaderKeywords = new FileReader(pathFileKeywordsFilter);
+		FileReader fileReader = new FileReader(pathFileKeyWordsCrawler, pathFileKeywordsFilter );
 		
 		// If is false is because the file was not read successfully
-		if(!fileReader.init()){
+		if(!fileReader.initReadKeywordsFilter()){
 			System.out.println("It was impossible read the file.");
 		}
 		
@@ -170,8 +167,13 @@ public class TweetFilter {
 		// 1: Reading tweets with Stream API
 		// 2: Reading tweets with Search API
 		
+		// Creating the Filter object with the keywords_filter
+		Filter f = new Filter(fileReader.getKeywordsFilter());
+		// Instantiating the object that will contain the methods for extracting the tweets
+		TweetFilter tweetFilter = new TweetFilter(f);
+		
 		// Calling the method that will start the tweet's extraction
-		tweetFilter.startStream(keywords, fileReader.getKeywords().size());
+		tweetFilter.startStream(keywords, fileReader.getKeywords().size(), fileReader.getKeywordsFilter());
 	}
 
 }

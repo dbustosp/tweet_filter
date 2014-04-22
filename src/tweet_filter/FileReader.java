@@ -25,7 +25,7 @@ public class FileReader {
 	}
 	
 	// Read the file with the keywords to filter the tweets once crawled
-	public Boolean initReadWordsFilter() {
+	public Boolean initReadKeywordsFilter() {
 		
 		InputStream fis;
 		BufferedReader br;
@@ -59,7 +59,7 @@ public class FileReader {
 	}
 	
 	// Read the file the keywords to filter the tweets from the API
-	public Boolean initReadWordsCrawler() {
+	public Boolean initReadKeywordsCrawler() {
 		
 		InputStream fis;
 		BufferedReader br;
@@ -94,5 +94,9 @@ public class FileReader {
 	
 	public ArrayList<String> getKeywords() {
 		return keywords;
+	}
+	
+	public ArrayList<String> getKeywordsFilter() {
+		return keywords_filter;
 	}
 }
