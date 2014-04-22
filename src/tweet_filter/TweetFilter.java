@@ -141,18 +141,23 @@ public class TweetFilter {
 		} // end iteration for keyword[]
 	}
 	
+	public void readJsonAndOutput(Filter f) {
+		
+	}
 	
 	public static void main(String[] args) {
 				
 		// Defining a path for the file with all the keywords
-		//String pathFile = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
-		String pathFileKeyWordsCrawler = args[0];
+		String pathFileKeyWordsCrawler = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
+		//String pathFileKeyWordsCrawler = args[0];
 		String pathFileKeywordsFilter = "/Users/danilobustos/tweet_filter/keywords_filter.txt";
 		System.out.println("PathFile: " + pathFileKeyWordsCrawler);
 		System.out.println("pathFileKeywordsFilter: " + pathFileKeywordsFilter);
 		
 		// The object which will read the file and will return the keywords from the file
 		FileReader fileReader = new FileReader(pathFileKeyWordsCrawler, pathFileKeywordsFilter );
+		
+		
 		
 		// If is false is because the file was not read successfully
 		if(!fileReader.initReadKeywordsFilter()){
@@ -172,8 +177,14 @@ public class TweetFilter {
 		// Instantiating the object that will contain the methods for extracting the tweets
 		TweetFilter tweetFilter = new TweetFilter(f);
 		
+		JsonReader jr = new JsonReader("/Users/danilobustos/Dropbox/Tecnologías_de_la_web/Tweets_con_queries/tweets_ues_queries.json", f);
+		jr.readFilterAndOutput();
+		
 		// Calling the method that will start the tweet's extraction
-		tweetFilter.startStream(keywords, fileReader.getKeywords().size(), fileReader.getKeywordsFilter());
+		//tweetFilter.startStream(keywords, fileReader.getKeywords().size(), fileReader.getKeywordsFilter());
+		
+		
+		
 	}
 
 }

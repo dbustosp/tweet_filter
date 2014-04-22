@@ -16,7 +16,7 @@ public class Filter {
 	public Boolean filter(String text_tweet) {
 		// Iterating through the keywords and check if one of the keywords_filter is in the tweet
 		for(String s : keywords_filter) {
-			if(text_tweet.indexOf(s) > 0) {
+			if(text_tweet.toLowerCase().indexOf(s.toLowerCase()) > -1) {
 				return false;				
 			}
 		}
