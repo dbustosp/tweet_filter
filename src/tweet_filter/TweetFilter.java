@@ -178,7 +178,8 @@ public class TweetFilter {
 		TweetFilter tweetFilter = new TweetFilter(f);
 		
 		JsonReader jr = new JsonReader("/Users/danilobustos/Dropbox/Tecnologías_de_la_web/Tweets_con_queries/tweets_ues_queries.json", f);
-		jr.readFilterAndOutput();
+		// (String host_database, int port_database, String db_name, String collection_name
+		jr.readFilterAndOutput("ds033487.mongolab.com", 33487, "tecweb", "tweet");
 		
 		// Calling the method that will start the tweet's extraction
 		//tweetFilter.startStream(keywords, fileReader.getKeywords().size(), fileReader.getKeywordsFilter());
