@@ -48,7 +48,7 @@ public class MongoDB {
 			return null;
 		}
 		
-		System.out.println("Guardando: " + text_tweet);
+		//System.out.println("Guardando: " + text_tweet);
 		
 		// Parsing the tweet
         DBObject tweet = new BasicDBObject();
@@ -82,14 +82,10 @@ public class MongoDB {
 		tweet.put("num_user_lists", status.getUser().getListedCount());
 		tweet.put("user_name", status.getUser().getName());
 				
-		
-		
 		// profile data
 		tweet.put("url_user", status.getUser().getURL());
 		tweet.put("url_image_background", status.getUser().getProfileBackgroundImageURL());
 		tweet.put("url_image_profile", status.getUser().getOriginalProfileImageURL());
-		
-		
 		
 		// Returning the tweet in the database
 		return tweet;

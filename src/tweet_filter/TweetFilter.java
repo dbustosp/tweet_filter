@@ -15,6 +15,8 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
 
+
+
 import com.mongodb.DBObject;
 
 public class TweetFilter {
@@ -35,6 +37,8 @@ public class TweetFilter {
         if(!mongo.initMongoDB()){
         	System.out.println("It was impossible make the connection.");
         	System.exit(-1);
+        }else {
+        	System.out.println("Connection stablisheeeed.");
         }
     }
 	
@@ -59,11 +63,10 @@ public class TweetFilter {
         
         String[] lang = {"es"};
         
-        filter.language(lang);
-        
+        filter.language(lang);  
         
         // Attaching the listener to the twitterStream object
-        StatusListener listener = new TweetListener(mongo);
+        StatusListener listener = new TweetListener(mongo, null, 0, null, null);
         twitterStream.addListener(listener);
          
         // Starting to filter the tweets
@@ -145,22 +148,28 @@ public class TweetFilter {
 		
 	}
 	
+	
+	// 0: keywords to filter
+	// 1: keywords to parse the Twitter
+	// 2: "localhost"
+	// 3: PortDatabase: 27017
+	// 4: DB_NAME
+	// 5: COLLECTION_NAME
 	public static void main(String[] args) {
 				
 		// Defining a path for the file with all the keywords
-		String pathFileKeyWordsCrawler = "/Users/danilobustos/tweet_filter/keywords_universities.txt";
-		//String pathFileKeyWordsCrawler = args[0];
-		String pathFileKeywordsFilter = "/Users/danilobustos/tweet_filter/keywords_filter.txt";
-		System.out.println("PathFile: " + pathFileKeyWordsCrawler);
-		System.out.println("pathFileKeywordsFilter: " + pathFileKeywordsFilter);
+		String pathFileKeyWordsCrawler = args[0];
+		String pathFileKeywordsFilter = args[1];
+		MongoDBConnection.getInstance().setHOST_DATABASE(args[2]);
+		MongoDBConnection.getInstance().setPORT_DATABASE(Integer.parseInt(args[3]));
+		MongoDBConnection.getInstance().setDB_NAME(args[4]);
+		MongoDBConnection.getInstance().setCOLLECTION_NAME(args[5]);
 		
 		// The object which will read the file and will return the keywords from the file
 		FileReader fileReader = new FileReader(pathFileKeyWordsCrawler, pathFileKeywordsFilter );
 		
-		
-		
 		// If is false is because the file was not read successfully
-		if(!fileReader.initReadKeywordsFilter()){
+		if(!fileReader.initReadKeywordsFilter() || !fileReader.initReadKeywordsCrawler()){
 			System.out.println("It was impossible read the file.");
 		}
 		
@@ -177,15 +186,14 @@ public class TweetFilter {
 		// Instantiating the object that will contain the methods for extracting the tweets
 		TweetFilter tweetFilter = new TweetFilter(f);
 		
-		JsonReader jr = new JsonReader("/Users/danilobustos/Dropbox/Tecnologías_de_la_web/Tweets_con_queries/tweets_ues_queries.json", f);
+		//JsonReader jr = new JsonReader("/Users/danilobustos/Dropbox/Tecnologías_de_la_web/Tweets_con_queries/tweetUes_v2.json", f);
 		// (String host_database, int port_database, String db_name, String collection_name
-		jr.readFilterAndOutput("ds033487.mongolab.com", 33487, "tecweb", "tweet");
+		//jr.readFilterAndOutput("localhost", 27017, "tecweb", "tweet");
+		
+		//tweetFilter.startSearchTweetsDate(keywords, fileReader.getKeywords().size());
 		
 		// Calling the method that will start the tweet's extraction
-		//tweetFilter.startStream(keywords, fileReader.getKeywords().size(), fileReader.getKeywordsFilter());
-		
-		
-		
+		tweetFilter.startStream(keywords, fileReader.getKeywords().size(), fileReader.getKeywordsFilter());	
 	}
 
 }

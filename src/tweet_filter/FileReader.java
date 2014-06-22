@@ -30,7 +30,7 @@ public class FileReader {
 		InputStream fis;
 		BufferedReader br;
 		String line;
-		
+		System.out.println("initReadKeywordsCrawler: " + filePathKeywords);
 		try {
 			fis = new FileInputStream(filePathKeywords);
 			br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
@@ -64,6 +64,7 @@ public class FileReader {
 		InputStream fis;
 		BufferedReader br;
 		String line;
+		System.out.println("initReadKeywordsCrawler: " + filePath);
 		
 		try {
 			fis = new FileInputStream(filePath);
@@ -93,6 +94,9 @@ public class FileReader {
 	}
 	
 	public ArrayList<String> getKeywords() {
+		System.out.println("keyWoooooords:");
+		System.out.println(keywords.toString());
+		System.out.println(keywords.size());
 		return keywords;
 	}
 	
